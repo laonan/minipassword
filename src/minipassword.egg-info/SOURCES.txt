@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/minipassword/__init__.py
+src/minipassword/box.py
+src/minipassword/commands.py
+src/minipassword.egg-info/PKG-INFO
+src/minipassword.egg-info/SOURCES.txt
+src/minipassword.egg-info/dependency_links.txt
+src/minipassword.egg-info/requires.txt
+src/minipassword.egg-info/top_level.txt
+src/minipassword.egg-info/zip-safe
+tests/test_conf.py
+tests/test_manager.py
+tests/testcommands.py
