@@ -207,7 +207,8 @@ class CommandHandler:
             original_login_name = self.password_manager.aes_decrypt(password_obj[2])
             login_name = input(f'Enter the login name ({original_login_name}): ')
             if login_name == '':
-                login_name = password_obj[2]
+                login_name = original_login_name
+
             password = input('Enter the password: ')
             if password == '':
                 password = self.password_manager.aes_decrypt(password_obj[3])

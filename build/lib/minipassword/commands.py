@@ -2,27 +2,33 @@ import configparser
 import os
 import re
 import argparse
+import sys
+
 from simple_term_menu import TerminalMenu
 from cryptography.fernet import Fernet
 from .box import ConfUtils, PasswordManager
 
 
 parser = argparse.ArgumentParser(description='Mini Password is a command-line password manager.')
-parser.add_argument('-a', '--add', action='store_true', help='add a new password')
-parser.add_argument('-d', '--delete', action='store_true', help='delete a password')
-parser.add_argument('-u', '--update', action='store_true', help='update a password')
-parser.add_argument('-l', '--list-file', action='store_true', help='list database file and configuration file paths')
-parser.add_argument('-b', '--backup', action='store_true', help='backup the database file')
-parser.add_argument('-p', '--upload', action='store_true', help='upload the database file to a cloud service')
-parser.add_argument('-r', '--restore', action='store_true', help='restore the database file from cloud service')
-parser.add_argument('-api', '--api', action='store_true', help='set cloud API url and token')
-parser.add_argument('-dd', '--destroy', action='store_true', help='destroy the database, all data will be lost!')
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-a', '--add', action='store_true', help='add a new password')
+group.add_argument('-d', '--delete', action='store_true', help='delete a password')
+group.add_argument('-u', '--update', action='store_true', help='update a password')
+group.add_argument('-l', '--list-file', action='store_true', help='list database file and configuration file paths')
+group.add_argument('-b', '--backup', action='store_true', help='backup the database file')
+group.add_argument('-p', '--upload', action='store_true', help='upload the database file to a cloud service')
+group.add_argument('-r', '--restore', action='store_true', help='restore the database file from cloud service')
+group.add_argument('-api', '--api', action='store_true', help='set cloud API url and token')
+group.add_argument('-dd', '--destroy', action='store_true', help='destroy the database, all data will be lost!')
 args = parser.parse_args()
 
 
 class CommandHandler:
 
     def __init__(self):
+        if len(sys.argv) > 2:
+            print('Only one argument is allowed!')
+
         self.conf_utils = ConfUtils()
         self.run_trigger = True
         self.add_arg = args.add
@@ -34,6 +40,7 @@ class CommandHandler:
         self.upload_arg = args.upload
         self.restore_arg = args.restore
         self.api_arg = args.api
+
 
         try:
             self.conf_utils.get('db', 'database_file')
@@ -115,7 +122,12 @@ class CommandHandler:
                 if len(passwords) == 1:
                     self.show_password(passwords[0])
                 else:
-                    menu_items = [f'#{password[0]} \| name: {password[1]} \| url: {password[5]} \| {password[4]}' for password in passwords]
+                    menu_items = []
+                    for password in passwords:
+                        item = f'#{password[0]} \| {password[1]} \| {password[5]} \| {password[4]}'
+                        if len(item) > 40:
+                            item = item[:40] + '...'
+                        menu_items.append(item)
                     menu = TerminalMenu(menu_items)
                     menu_entry_index = menu.show()
                     selected_password = passwords[menu_entry_index]
